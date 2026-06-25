@@ -632,14 +632,23 @@ public class WiGLEApiManager {
                 handler.sendEmptyMessage( BackgroundGuiHandler.WRITING_PERCENT_START + progress );
             }
         });
+        final SharedPreferences uploadPrefs = context.getSharedPreferences(
+                PreferenceKeys.SHARED_PREFS, android.content.Context.MODE_PRIVATE);
+        final String customUrl = uploadPrefs.getString(PreferenceKeys.PREF_CUSTOM_UPLOAD_URL, "").trim();
+        final String customToken = uploadPrefs.getString(PreferenceKeys.PREF_CUSTOM_UPLOAD_TOKEN, "").trim();
+        final String uploadUrl = customUrl.isEmpty() ? FILE_POST_URL : customUrl;
+
         OkHttpClient client = unauthedClient;
-        if (authedClient != null) {
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(uploadUrl)
+                .post(countingBody);
+        if (!customToken.isEmpty()) {
+            // custom server: Bearer token auth, bypass WiGLE Basic Auth
+            requestBuilder.header("Authorization", "Bearer " + customToken);
+        } else if (authedClient != null) {
             client = authedClient;
         }
-        Request request = new Request.Builder()
-                .url(FILE_POST_URL)
-                .post(countingBody)
-                .build();
+        Request request = requestBuilder.build();
 
         client.newCall(request).enqueue(new Callback() {
                 @Override

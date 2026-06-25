@@ -63,6 +63,10 @@ public class PreferenceKeys {
 
     public static final String PREF_ALERT_BLE_MFGR_IDS = "alertOnBleMfgrId";
 
+    // custom upload server (overrides WiGLE endpoints when set)
+    public static final String PREF_CUSTOM_UPLOAD_URL = "customUploadUrl";
+    public static final String PREF_CUSTOM_UPLOAD_TOKEN = "customUploadToken";
+
     // map prefs
     public static final String PREF_MAP_NO_TILE = "NONE";
     public static final String PREF_MAP_ONLYMINE_TILE = "MINE";

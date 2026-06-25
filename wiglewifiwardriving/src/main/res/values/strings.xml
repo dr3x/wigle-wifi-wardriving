@@ -341,6 +341,9 @@
     <string name="map_data_head">Map Device Data</string>
     <string name="map_tile_head">Map Overlay Settings</string>
     <string name="settings_ident_head">Identity Settings</string>
+    <string name="settings_custom_upload_head">Custom Upload Server</string>
+    <string name="custom_upload_url">Upload URL (leave blank for WiGLE)</string>
+    <string name="custom_upload_token">Bearer token</string>
     <string name="settings_gen_head">General Settings</string>
     <string name="settings_map_head">Map Settings</string>
     <string name="settings_scan_head">Scan Settings</string>

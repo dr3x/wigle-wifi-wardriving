@@ -112,6 +112,43 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:text="@string/settings_custom_upload_head"
+        android:paddingHorizontal="4dp"
+        style="@style/WiGLESectionHeader"
+        />
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/custom_upload_url">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_custom_upload_url"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textUri"
+            android:imeOptions="actionNext"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/custom_upload_token">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_custom_upload_token"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        style="@style/DividerColor"
+        android:layout_marginBottom="4dip"
+        />
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:text="@string/settings_gen_head"
         android:paddingHorizontal="4dp"
         style="@style/WiGLESectionHeader"

@@ -525,6 +525,26 @@ public final class SettingsFragment extends Fragment implements DialogListener {
             }
         });
 
+        final EditText customUploadUrl = view.findViewById(R.id.edit_custom_upload_url);
+        customUploadUrl.setText(prefs.getString(PreferenceKeys.PREF_CUSTOM_UPLOAD_URL, ""));
+        customUploadUrl.addTextChangedListener(new SetWatcher() {
+            @Override
+            public void onTextChanged(final String s) {
+                editor.putString(PreferenceKeys.PREF_CUSTOM_UPLOAD_URL, s.trim());
+                editor.apply();
+            }
+        });
+
+        final EditText customUploadToken = view.findViewById(R.id.edit_custom_upload_token);
+        customUploadToken.setText(prefs.getString(PreferenceKeys.PREF_CUSTOM_UPLOAD_TOKEN, ""));
+        customUploadToken.addTextChangedListener(new SetWatcher() {
+            @Override
+            public void onTextChanged(final String s) {
+                editor.putString(PreferenceKeys.PREF_CUSTOM_UPLOAD_TOKEN, s.trim());
+                editor.apply();
+            }
+        });
+
         final Button button = view.findViewById(R.id.speech_button);
         button.setOnClickListener(view1 -> {
             final Intent errorReportIntent = new Intent( getActivity(), SpeechActivity.class );
