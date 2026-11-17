@@ -438,6 +438,8 @@ KMLにエクスポート</string>
     <string name="manage_gpx">保存されたGPXルートを管理する</string>
     <string name="enable_map_theme">マップのテーマをアプリに一致させる</string>
     <string name="throttle">WiFiスキャンは制限されています。パフォーマンスを向上させるには、開発者設定でWiFiスキャンスロットルを無効にします。</string>
+    <string name="samsung_wifi_calling">このSamsung端末ではWi-Fi通話がスキャンをクラッシュさせることがあります。スキャン中はWi-Fi通話をオフにしてください: 設定 -> 接続 -> Wi-Fi通話。</string>
+    <string name="quick_doze_warning">この端末は画面オフから数分でディープスリープに入り、Wi-Fiスキャンが止まります。Pixelでは 設定 -> バッテリー -> 自動調整設定 -> 自動調整バッテリー をオフにして、端末を再起動してください。</string>
     <string name="no_individual_nets_map">マップネット表示を無効にする</string>
     <string name="filter_show_btle">BluetoothLEを表示する</string>
     <string name="enable_kalman">GPSノイズをフィルターする</string>
@@ -503,4 +505,7 @@ KMLにエクスポート</string>
     <string name="file_size_warning">複数回のアップロードが必要になります。</string>
     <string name="invalid_foss_config">FOSS マップの設定が無効のようです。設定を確認してください。</string>
     <string name="menu_drawer_title">メニュー</string>
+    <string name="display_inline_histograms">リスト背景にRSSIヒストグラムを表示</string>
+    <string name="anniversary_mode_enabled">25周年記念モードが有効になりました</string>
+    <string name="anniversary_mode_disabled">25周年記念モードが無効になりました</string>
 </resources>

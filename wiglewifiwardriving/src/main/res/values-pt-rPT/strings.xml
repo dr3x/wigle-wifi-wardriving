@@ -434,6 +434,8 @@
     <string name="manage_gpx">Gerenciar rotas GPX salvas</string>
     <string name="enable_map_theme">Mostrar o mapa com o tema igual ao da aplicação.</string>
     <string name="throttle">A varredura WiFi é limitada. Desative o Acelerador de Varredura WiFi nas Configurações do Desenvolvedor para um melhor desempenho.</string>
+    <string name="samsung_wifi_calling">As chamadas Wi-Fi podem bloquear a procura neste dispositivo Samsung. Desative as Chamadas Wi-Fi durante a procura: Definições -> Ligações -> Chamadas Wi-Fi.</string>
+    <string name="quick_doze_warning">Este telemóvel entra em suspensão profunda poucos minutos depois de o ecrã se desligar, o que interrompe a pesquisa WiFi. Nos telemóveis Pixel, desative Definições -> Bateria -> Preferências adaptáveis -> Bateria adaptável e reinicie o telemóvel.</string>
     <string name="no_individual_nets_map">Desabilitar a exibição da rede do mapa</string>
     <string name="filter_show_btle">Mostrar Bluetooth LE</string>
     <string name="settings_gps_head">Configurações de GPS</string>
@@ -499,4 +501,7 @@
     <string name="file_size_warning">Serão necessários vários envios.</string>
     <string name="invalid_foss_config">Parece que a sua configuração do mapa FOSS é inválida. Por favor, verifique as suas definições.</string>
     <string name="menu_drawer_title">Menu</string>
+    <string name="display_inline_histograms">Mostrar histogramas RSSI no fundo da lista</string>
+    <string name="anniversary_mode_enabled">Modo 25.º aniversário ativado</string>
+    <string name="anniversary_mode_disabled">Modo 25.º aniversário desativado</string>
 </resources>

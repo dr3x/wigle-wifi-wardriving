@@ -435,6 +435,8 @@
     <string name="manage_gpx">נהל מסלולי GPX שמורים</string>
     <string name="enable_map_theme">התאם את נושא המפה לאפליקציה</string>
     <string name="throttle">סריקת WiFi מוגבלת. השבת את מצערת הסריקה של WiFi תחת הגדרות מפתחים לביצועים טובים יותר.</string>
+    <string name="samsung_wifi_calling">שיחות Wi-Fi עלולות לקרוס את הסריקה במכשיר Samsung זה. כבו את שיחות ה-Wi-Fi בזמן הסריקה: הגדרות -> חיבורים -> שיחות Wi-Fi.</string>
+    <string name="quick_doze_warning">הטלפון הזה נכנס לשינה עמוקה תוך דקות מכיבוי המסך, מה שעוצר את סריקת ה-WiFi. בטלפוני Pixel, כבו את הגדרות -> סוללה -> העדפות מותאמות -> סוללה מותאמת, ואז הפעילו מחדש את הטלפון.</string>
     <string name="no_individual_nets_map">השבת את תצוגת רשת המפה</string>
     <string name="filter_show_btle">הצג Bluetooth LE</string>
     <string name="settings_gps_head">הגדרות GPS</string>
@@ -500,4 +502,7 @@
     <string name="file_size_warning">נדרשות העלאות מרובות.</string>
     <string name="invalid_foss_config">נראה שתצורת מפת FOSS שלך אינה חוקית. אנא בדוק את ההגדרות שלך.</string>
     <string name="menu_drawer_title">תפריט</string>
+    <string name="display_inline_histograms">הצג היסטוגרמות RSSI ברקע הרשימה</string>
+    <string name="anniversary_mode_enabled">מצב יום השנה ה-25 הופעל</string>
+    <string name="anniversary_mode_disabled">מצב יום השנה ה-25 הושבת</string>
 </resources>

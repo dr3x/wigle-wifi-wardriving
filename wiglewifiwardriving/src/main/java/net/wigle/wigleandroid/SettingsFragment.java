@@ -70,6 +70,7 @@ import net.wigle.wigleandroid.net.RequestCompletedListener;
 import net.wigle.wigleandroid.ui.LayoutUtil;
 import net.wigle.wigleandroid.ui.PrefsBackedCheckbox;
 import net.wigle.wigleandroid.ui.WiGLEConfirmationDialog;
+import net.wigle.wigleandroid.ui.WiGLEToast;
 import net.wigle.wigleandroid.util.FileUtility;
 import net.wigle.wigleandroid.util.Logging;
 import net.wigle.wigleandroid.util.PreferenceKeys;
@@ -96,6 +97,9 @@ public final class SettingsFragment extends Fragment implements DialogListener {
     private static final int DONATE_DIALOG=112;
     private static final int ANONYMOUS_DIALOG=113;
     private static final int DEAUTHORIZE_DIALOG=114;
+    private static final int ANNIVERSARY_MODE_TAPS = 25;
+
+    private int anniversaryTapCount = 0;
 
     public boolean allowRefresh = false;
 
@@ -309,6 +313,7 @@ public final class SettingsFragment extends Fragment implements DialogListener {
         });
 
         final TextView scanThrottleHelp = view.findViewById(R.id.scan_throttle_help);
+        boolean throttleDisabled = false;
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
             scanThrottleHelp.setText(R.string.pie_bad);
             scanThrottleHelp.setVisibility(VISIBLE);
@@ -323,12 +328,33 @@ public final class SettingsFragment extends Fragment implements DialogListener {
             final Context mainActivity = MainActivity.getMainActivity();
             if (mainActivity != null) {
                 final WifiManager wifiManager = (WifiManager) mainActivity.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                if (wifiManager.isScanThrottleEnabled()) {
+                if (wifiManager != null && wifiManager.isScanThrottleEnabled()) {
                     final StringBuilder builder = new StringBuilder(getString(R.string.throttle));
                     addDevModeMesgIfApplicable(builder, getContext(), getString(R.string.enable_developer));
                     scanThrottleHelp.setText(builder.toString());
                     scanThrottleHelp.setVisibility(VISIBLE);
+                } else if (wifiManager != null) {
+                    throttleDisabled = true;
                 }
+            }
+        }
+        // Same slot as the throttle banner. Samsung IMS on API 36+ can still wedge scanning
+        // once the user has turned throttling off and this banner would otherwise stay hidden.
+        if (scanThrottleHelp.getVisibility() != VISIBLE && throttleDisabled
+                && Build.VERSION.SDK_INT >= 36
+                && "samsung".equalsIgnoreCase(Build.MANUFACTURER)) {
+            scanThrottleHelp.setText(R.string.samsung_wifi_calling);
+            scanThrottleHelp.setVisibility(VISIBLE);
+        }
+        // Quick doze seen while scanning (see QuickDozeDetector). Added to whatever the slot
+        // already shows, since it stops scanning outright with the screen off.
+        if (prefs.contains(PreferenceKeys.PREF_QUICK_DOZE_SEEN)) {
+            if (scanThrottleHelp.getVisibility() == VISIBLE) {
+                scanThrottleHelp.setText(scanThrottleHelp.getText() + "\n\n"
+                        + getString(R.string.quick_doze_warning));
+            } else {
+                scanThrottleHelp.setText(R.string.quick_doze_warning);
+                scanThrottleHelp.setVisibility(VISIBLE);
             }
         }
 
@@ -566,6 +592,13 @@ public final class SettingsFragment extends Fragment implements DialogListener {
         final Activity thisActivity = this.getActivity();
         if (null != thisActivity) {
             PrefsBackedCheckbox.prefBackedCheckBox(thisActivity, view, R.id.edit_showcurrent, PreferenceKeys.PREF_SHOW_CURRENT, true);
+            PrefsBackedCheckbox.prefBackedCheckBox(thisActivity, view, R.id.display_inline_histograms,
+                    PreferenceKeys.PREF_DISPLAY_INLINE_LIST_SIGNAL_HISTOGRAMS, false, value -> {
+                        final MainActivity.State s = MainActivity.getStaticState();
+                        if (s != null && s.rssiHistoryCache != null) {
+                            s.rssiHistoryCache.setEnabled(value);
+                        }
+                    });
             PrefsBackedCheckbox.prefBackedCheckBox(thisActivity, view, R.id.use_metric, PreferenceKeys.PREF_METRIC, false);
             PrefsBackedCheckbox.prefBackedCheckBox(thisActivity, view, R.id.found_sound, PreferenceKeys.PREF_FOUND_SOUND, true);
             PrefsBackedCheckbox.prefBackedCheckBox(thisActivity, view, R.id.found_new_sound, PreferenceKeys.PREF_FOUND_NEW_SOUND, true);
@@ -725,6 +758,27 @@ public final class SettingsFragment extends Fragment implements DialogListener {
             } catch (PackageManager.NameNotFoundException e) {
                 Logging.error("Unable to get version number: ",e);
             }
+            appVersion.setClickable(true);
+            appVersion.setFocusable(true);
+            appVersion.setOnClickListener(v -> {
+                anniversaryTapCount++;
+                if (anniversaryTapCount < ANNIVERSARY_MODE_TAPS) {
+                    return;
+                }
+                anniversaryTapCount = 0;
+                final boolean enabled = !prefs.getBoolean(PreferenceKeys.PREF_CUSTOM_MENU_ICON, false);
+                prefs.edit().putBoolean(PreferenceKeys.PREF_CUSTOM_MENU_ICON, enabled).apply();
+                final MainActivity mainActivity = MainActivity.getMainActivity();
+                if (mainActivity != null) {
+                    mainActivity.applyCustomMenuIcon();
+                }
+                final FragmentActivity fa = getActivity();
+                if (fa != null) {
+                    WiGLEToast.showOverFragment(fa, R.string.app_name,
+                            getString(enabled ? R.string.anniversary_mode_enabled
+                                    : R.string.anniversary_mode_disabled));
+                }
+            });
         }
     }
 

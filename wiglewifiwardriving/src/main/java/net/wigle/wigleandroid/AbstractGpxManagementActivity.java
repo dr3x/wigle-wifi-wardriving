@@ -24,7 +24,6 @@ import net.wigle.wigleandroid.background.GpxExportRunnable;
 import net.wigle.wigleandroid.db.DBException;
 import net.wigle.wigleandroid.db.DatabaseHelper;
 import net.wigle.wigleandroid.model.RouteDescriptor;
-import net.wigle.wigleandroid.ui.ThemeUtil;
 import net.wigle.wigleandroid.ui.GpxRecyclerAdapter;
 import net.wigle.wigleandroid.ui.ScreenChildActivity;
 import net.wigle.wigleandroid.ui.WiGLEToast;
@@ -289,26 +288,24 @@ public abstract class AbstractGpxManagementActivity extends ScreenChildActivity 
         }
         int runIdCol = cursor.getColumnIndexOrThrow("run_id");
         long runId = cursor.getLong(runIdCol);
-        try (Cursor routeCursor = dbHelper.routeIterator(runId)) {
-            if (routeCursor == null) return;
-            final int mapMode = prefs.getInt(PreferenceKeys.PREF_MAP_TYPE, 1);
-            final boolean nightMode = ThemeUtil.shouldUseMapNightMode(this, prefs);
-            RouteDescriptor newRoute = new RouteDescriptor();
-            for (routeCursor.moveToFirst(); !routeCursor.isAfterLast(); routeCursor.moveToNext()) {
-                float lat = routeCursor.getFloat(0);
-                float lon = routeCursor.getFloat(1);
-                newRoute.addLatLng(lat, lon, mapMode, nightMode);
-            }
-            configureMapForRoute(newRoute);
-        } catch (Exception e) {
-            Logging.error("Unable to display route after delete: ", e);
-        }
         adapter.setSelectedPosition(0);
+        adapter.loadAndShowRoute(runId);
     }
 
     @Override
     public void onDestroy() {
         Logging.info("GPX MGMT: onDestroy");
+        final RecyclerView recyclerView = findViewById(R.id.gpx_list);
+        if (recyclerView != null) {
+            final RecyclerView.Adapter<?> adapter = recyclerView.getAdapter();
+            if (adapter instanceof GpxRecyclerAdapter) {
+                // close the route-meta Cursor held by the adapter
+                final GpxRecyclerAdapter gpxAdapter = (GpxRecyclerAdapter) adapter;
+                gpxAdapter.shutdown();
+                gpxAdapter.updateCursor(null);
+            }
+            recyclerView.setAdapter(null);
+        }
         destroyMapView();
         super.onDestroy();
         finish();

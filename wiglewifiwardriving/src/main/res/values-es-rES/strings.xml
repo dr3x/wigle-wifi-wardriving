@@ -434,6 +434,8 @@
     <string name="manage_gpx">Administrar rutas GPX guardadas</string>
     <string name="enable_map_theme">Hacer coincidir el tema del mapa con el de la aplicación</string>
     <string name="throttle">El escaneo WiFi es limitado. Deshabilite WiFi Scan Throttle en Configuración de desarrollador para un mejor rendimiento.</string>
+    <string name="samsung_wifi_calling">Las llamadas Wi-Fi pueden bloquear el escaneo en este dispositivo Samsung. Desactive las llamadas Wi-Fi mientras escanea: Ajustes -> Conexiones -> Llamadas Wi-Fi.</string>
+    <string name="quick_doze_warning">Este teléfono entra en reposo profundo pocos minutos después de apagarse la pantalla, lo que detiene el escaneo WiFi. En teléfonos Pixel, desactiva Ajustes -> Batería -> Preferencias adaptativas -> Batería adaptativa y reinicia el teléfono.</string>
     <string name="no_individual_nets_map">Deshabilitar la visualización de la red del mapa</string>
     <string name="filter_show_btle">Mostrar Bluetooth LE</string>
     <string name="settings_gps_head">Configuración GPS</string>
@@ -499,4 +501,7 @@
     <string name="file_size_warning">Serán necesarias varias subidas.</string>
     <string name="invalid_foss_config">Parece que la configuración del mapa FOSS no es válida. Por favor, revise sus ajustes.</string>
     <string name="menu_drawer_title">Menú</string>
+    <string name="display_inline_histograms">Mostrar histogramas RSSI en el fondo de la lista</string>
+    <string name="anniversary_mode_enabled">Modo 25.º aniversario activado</string>
+    <string name="anniversary_mode_disabled">Modo 25.º aniversario desactivado</string>
 </resources>

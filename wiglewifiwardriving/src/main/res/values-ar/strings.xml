@@ -435,6 +435,8 @@
     <string name="manage_gpx">إدارة مسارات GPX المحفوظة</string>
     <string name="enable_map_theme">تطابق موضوع الخريطة مع التطبيق</string>
     <string name="throttle">مسح WiFi محدود. قم بتعطيل WiFi Scan Throttle ضمن إعدادات المطور للحصول على أداء أفضل.</string>
+    <string name="samsung_wifi_calling">قد تؤدي مكالمات Wi-Fi إلى تعطيل المسح على جهاز Samsung هذا. أوقف مكالمات Wi-Fi أثناء المسح: الإعدادات -> الاتصالات -> مكالمات Wi-Fi.</string>
+    <string name="quick_doze_warning">يدخل هذا الهاتف في سكون عميق خلال دقائق من إطفاء الشاشة، مما يوقف البحث عن شبكات WiFi. على هواتف Pixel، أوقف الإعدادات -> البطارية -> الإعدادات المفضّلة التكيّفية -> البطارية التكيّفية، ثم أعد تشغيل الهاتف.</string>
     <string name="no_individual_nets_map">تعطيل عرض شبكة الخريطة</string>
     <string name="filter_show_btle">عرض Bluetooth LE</string>
     <string name="settings_gps_head">إعدادات GPS</string>
@@ -500,4 +502,7 @@
     <string name="file_size_warning">ستكون عمليات رفع متعددة ضرورية.</string>
     <string name="invalid_foss_config">يبدو أن إعدادات خريطة FOSS الخاصة بك غير صالحة. يرجى التحقق من الإعدادات.</string>
     <string name="menu_drawer_title">القائمة</string>
+    <string name="display_inline_histograms">إظهار مخططات RSSI في خلفية القائمة</string>
+    <string name="anniversary_mode_enabled">تم تفعيل وضع الذكرى السنوية الـ25</string>
+    <string name="anniversary_mode_disabled">تم تعطيل وضع الذكرى السنوية الـ25</string>
 </resources>

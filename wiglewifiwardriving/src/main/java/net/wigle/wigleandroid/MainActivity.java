@@ -35,12 +35,14 @@ import android.net.TrafficStats;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.AsyncTask;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 
@@ -63,6 +65,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 
 import android.speech.tts.TextToSpeech;
 import android.telephony.PhoneStateListener;
@@ -98,6 +101,7 @@ import net.wigle.wigleandroid.model.Network;
 import net.wigle.wigleandroid.net.WiGLEApiManager;
 import net.wigle.wigleandroid.ui.SetNetworkListAdapter;
 import net.wigle.wigleandroid.ui.ThemeUtil;
+import net.wigle.wigleandroid.ui.WLogoDrawerArrowDrawable;
 import net.wigle.wigleandroid.ui.WiGLEToast;
 import net.wigle.wigleandroid.util.BluetoothUtil;
 import net.wigle.wigleandroid.util.BuildReleaseTag;
@@ -105,6 +109,7 @@ import net.wigle.wigleandroid.util.FileUtility;
 import net.wigle.wigleandroid.util.InstallUtility;
 import net.wigle.wigleandroid.util.Logging;
 import net.wigle.wigleandroid.util.PreferenceKeys;
+import net.wigle.wigleandroid.util.QuickDozeDetector;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -150,6 +155,7 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
     public static class State {
         public MxcDatabaseHelper mxcDbHelper;
         public DatabaseHelper dbHelper;
+        public net.wigle.wigleandroid.util.RssiHistoryCache rssiHistoryCache;
         ServiceConnection serviceConnection;
         WigleService wigleService;
         AtomicBoolean finishing;
@@ -182,6 +188,7 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
         private boolean wantsScanWakeLock = false;
         private int logPointer = 0;
         private final String[] logs = new String[25];
+        final QuickDozeDetector quickDozeDetector = new QuickDozeDetector();
         Matcher bssidLogExclusions;
         Matcher bssidDisplayExclusions;
         Matcher bssidAlertList;
@@ -298,7 +305,6 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
         final SharedPreferences prefs = getSharedPreferences(PreferenceKeys.SHARED_PREFS, Context.MODE_PRIVATE);
 
         ThemeUtil.setTheme(prefs);
-        ThemeUtil.setNavTheme(this.getWindow(), this, prefs);
         mainActivity = this;
 
         // set language
@@ -777,6 +783,7 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
                 }
             }
         };
+        applyCustomMenuIcon();
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         final NavigationView navigationView = findViewById(R.id.left_drawer);
@@ -927,12 +934,15 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
      * per-tab title after the user dismisses the drawer without making a selection.
      */
     private CharSequence getTitleForNavId(final int itemId) {
-        if (itemId == R.id.nav_list) return getString(R.string.mapping_app_name);
+        if (itemId == R.id.nav_list) return getString(R.string.list_app_name);
+        if (itemId == R.id.nav_map) return getString(R.string.mapping_app_name);
         if (itemId == R.id.nav_dash) return getString(R.string.dashboard_app_name);
         if (itemId == R.id.nav_data) return getString(R.string.data_activity_name);
         if (itemId == R.id.nav_search) return getString(R.string.tab_search);
         if (itemId == R.id.nav_news) return getString(R.string.news_app_name);
+        if (itemId == R.id.nav_user_stats) return getString(R.string.user_stats_app_name);
         if (itemId == R.id.nav_rank) return getString(R.string.rank_stats_app_name);
+        if (itemId == R.id.nav_site_stats) return getString(R.string.site_stats_app_name);
         if (itemId == R.id.nav_stats) return getString(R.string.tab_stats);
         if (itemId == R.id.nav_uploads) return getString(R.string.uploads_app_name);
         if (itemId == R.id.nav_settings) return getString(R.string.settings_app_name);
@@ -1075,14 +1085,19 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
 
     private void setupDatabase(final SharedPreferences prefs) {
         // could be set by nonconfig retain
-        if (state.dbHelper == null) {
-            state.dbHelper = new DatabaseHelper(getApplicationContext(), prefs);
-            //state.dbHelper.checkDB();
-            state.dbHelper.start();
+        if (state.dbHelper == null || state.dbHelper.isFullyClosed()) {
+            state.dbHelper = DatabaseHelper.acquire(getApplicationContext(), prefs);
             ListFragment.lameStatic.dbHelper = state.dbHelper;
         }
         if (state.mxcDbHelper == null) {
             state.mxcDbHelper = new MxcDatabaseHelper(getApplicationContext(), prefs);
+        }
+        final boolean histogramsEnabled = prefs.getBoolean(
+                PreferenceKeys.PREF_DISPLAY_INLINE_LIST_SIGNAL_HISTOGRAMS, false);
+        if (state.rssiHistoryCache == null) {
+            state.rssiHistoryCache = new net.wigle.wigleandroid.util.RssiHistoryCache(histogramsEnabled);
+        } else {
+            state.rssiHistoryCache.setEnabled(histogramsEnabled);
         }
     }
 
@@ -1093,6 +1108,32 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
 
     public State getState() {
         return state;
+    }
+
+    /** True when no charger is plugged in; false when the battery state is not known yet. */
+    private boolean isOnBattery() {
+        // plug state, not charge status: an unplugged phone at 100% keeps reporting FULL
+        final Intent battery = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        return battery != null && battery.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) == 0;
+    }
+
+    /**
+     * Records or clears the quick-doze warning that SettingsFragment shows. Kept in preferences
+     * because the user usually finds out later, after the screen-off stretch that lost scans.
+     */
+    private void handleQuickDozeVerdict(final QuickDozeDetector.Verdict verdict) {
+        if (verdict == QuickDozeDetector.Verdict.NONE) {
+            return;
+        }
+        final SharedPreferences prefs = getSharedPreferences(PreferenceKeys.SHARED_PREFS, 0);
+        if (verdict == QuickDozeDetector.Verdict.QUICK_DOZE) {
+            Logging.warn("deep Doze within " + (QuickDozeDetector.QUICK_LIMIT_MS / 60_000L)
+                    + " minutes of screen-off while scanning; WiFi scans are refused until it ends");
+            prefs.edit().putLong(PreferenceKeys.PREF_QUICK_DOZE_SEEN, System.currentTimeMillis()).apply();
+        } else if (prefs.contains(PreferenceKeys.PREF_QUICK_DOZE_SEEN)) {
+            Logging.info("long screen-off on battery without deep Doze; clearing quick-doze warning");
+            prefs.edit().remove(PreferenceKeys.PREF_QUICK_DOZE_SEEN).apply();
+        }
     }
 
     static MainActivity getMainActivity(Fragment fragment) {
@@ -1213,6 +1254,23 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
                 playServiceShown = true;
             }
         }
+    }
+
+    /**
+     * Apply or clear the custom W-logo hamburger watermark based on
+     * {@link PreferenceKeys#PREF_CUSTOM_MENU_ICON} (default false).
+     */
+    public void applyCustomMenuIcon() {
+        if (mDrawerToggle == null) {
+            return;
+        }
+        final SharedPreferences prefs = getSharedPreferences(PreferenceKeys.SHARED_PREFS, Context.MODE_PRIVATE);
+        if (prefs.getBoolean(PreferenceKeys.PREF_CUSTOM_MENU_ICON, false)) {
+            mDrawerToggle.setDrawerArrowDrawable(new WLogoDrawerArrowDrawable(this));
+        } else {
+            mDrawerToggle.setDrawerArrowDrawable(new DrawerArrowDrawable(this));
+        }
+        mDrawerToggle.syncState();
     }
 
     @Override
@@ -1421,6 +1479,17 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
      */
     public static ConcurrentLinkedHashMap<String, Network> getNetworkCache() {
         return ListFragment.lameStatic.networkCache;
+    }
+
+    /**
+     * Record a timestamped RSSI sample into the global history cache.
+     * No-op when the cache is absent or disabled (pref off).
+     */
+    public static void recordRssiSample(final String bssid, final int level) {
+        final State s = getStaticState();
+        if (s != null && s.rssiHistoryCache != null) {
+            s.rssiHistoryCache.record(bssid, level);
+        }
     }
 
     public static void addNetworkToMap(final Network network) {
@@ -1921,9 +1990,11 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
         // register wifi receiver
         setupWifiReceiverIntent();
 
-        if (state.wifiLock == null && wifiManager != null) {
+        /* WIFI_MODE_SCAN_ONLY only keeps the radio up on Pie and below.
+         * On later releases it holds a useless reference in the wifi service for the whole session.
+         */
+        if (state.wifiLock == null && wifiManager != null && Build.VERSION.SDK_INT <= 28) {
             Logging.info("\tlock wifi radio on");
-            // lock the radio on (only works in 28 (P) and lower)
             state.wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_SCAN_ONLY, ListFragment.WIFI_LOCK_NAME);
             state.wifiLock.acquire();
         }
@@ -2201,15 +2272,35 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
                 if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                     Logging.info("SCREEN_OFF: acquiring scan wake lock if scanning");
                     acquireScanWakeLockIfNeeded();
+                    if (state != null) {
+                        state.quickDozeDetector.onScreenOff(SystemClock.elapsedRealtime(),
+                                isScanning(), isOnBattery());
+                    }
                 } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                     Logging.info("SCREEN_ON: releasing scan wake lock");
                     releaseScanWakeLock();
+                    if (state != null) {
+                        handleQuickDozeVerdict(state.quickDozeDetector.onScreenOn(
+                                SystemClock.elapsedRealtime(), isScanning(), isOnBattery()));
+                    }
+                } else if (PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED.equals(action)) {
+                    final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                    final boolean idle = pm != null && pm.isDeviceIdleMode();
+                    Logging.info("DEVICE_IDLE_MODE_CHANGED: idle " + idle);
+                    if (idle && state != null) {
+                        handleQuickDozeVerdict(state.quickDozeDetector.onIdleOn(
+                                SystemClock.elapsedRealtime(), isScanning()));
+                    }
+                    if (state != null && state.wifiReceiver != null) {
+                        state.wifiReceiver.onDeviceIdleChanged(idle);
+                    }
                 }
             }
         };
         final IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED);
         registerReceiver(screenStateReceiver, filter);
     }
 
@@ -2356,7 +2447,7 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
             // turn on location updates
             this.setLocationUpdates(getLocationSetPeriod(), 0f);
 
-            if (!state.wifiLock.isHeld()) {
+            if (state.wifiLock != null && !state.wifiLock.isHeld()) {
                 state.wifiLock.acquire();
             }
             // PARTIAL_WAKE_LOCK keep-alive for scan callbacks when screen is off. Actually acquired
@@ -2376,7 +2467,7 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
             // turn off location updates
             this.setLocationUpdates(0L, 0f);
             state.GNSSListener.handleScanStop();
-            if (state.wifiLock.isHeld()) {
+            if (state.wifiLock != null && state.wifiLock.isHeld()) {
                 try {
                     state.wifiLock.release();
                 } catch (SecurityException ex) {
@@ -2796,7 +2887,9 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
             }
 
             // close the db. not in destroy, because it'll still write after that.
-            if (state.dbHelper != null) state.dbHelper.close();
+            if (state.dbHelper != null) {
+                state.dbHelper.close();
+            }
             if (state.mxcDbHelper != null) state.mxcDbHelper.close();
 
             final LocationManager locationManager = (LocationManager) this.getApplicationContext().getSystemService(Context.LOCATION_SERVICE); //ALIBI: avoid activity context-based leaks
@@ -2963,16 +3056,10 @@ public final class MainActivity extends AppCompatActivity implements TextToSpeec
         //ALIBI: we'll piggyback off the current route, if we're logging it
         if (!logRoutes) {
             if (state != null && state.dbHelper != null) {
-                final DatabaseHelper dbHelper = state.dbHelper;
-                try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
-                    executor.execute(() -> {
-                        try {
-                            dbHelper.clearDefaultRoute();
-                        } catch (DBException dbe) {
-                            Logging.warn("unable to clear default route on startRouteMapping: ", dbe);
-                        }
-                    });
-                    executor.shutdown();
+                try {
+                    state.dbHelper.clearDefaultRoute();
+                } catch (DBException dbe) {
+                    Logging.warn("unable to clear default route on startRouteMapping: ", dbe);
                 }
             }
         }

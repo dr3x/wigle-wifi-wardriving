@@ -1,33 +1,41 @@
 package net.wigle.wigleandroid;
 
-import static net.wigle.wigleandroid.ui.PrefsBackedCheckbox.BT_SUB_BOX_IDS;
-import static net.wigle.wigleandroid.ui.PrefsBackedCheckbox.WIFI_SUB_BOX_IDS;
-
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import net.wigle.wigleandroid.model.FilterSet;
 import net.wigle.wigleandroid.ui.PrefsBackedCheckbox;
 import net.wigle.wigleandroid.ui.ScreenChildActivity;
+import net.wigle.wigleandroid.ui.WiGLEToast;
+import net.wigle.wigleandroid.util.FilterJson;
 import net.wigle.wigleandroid.util.FilterUtil;
 import net.wigle.wigleandroid.util.Logging;
 import net.wigle.wigleandroid.util.PreferenceKeys;
 
 import org.jspecify.annotations.NonNull;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Building a filter activity for the network list
@@ -158,9 +166,150 @@ public class FilterActivity extends ScreenChildActivity {
             startActivity( macFilterIntent );
         });
 
+        final Button exportAlertFilterButton = view.findViewById(R.id.export_alert_filter_button);
+        if (exportAlertFilterButton != null) {
+            exportAlertFilterButton.setOnClickListener(v -> promptExportAlertFilter(prefs));
+        }
+
         final Button finishButton = view.findViewById(R.id.finish_filter);
         if (null != finishButton) {
             finishButton.setOnClickListener(v -> finish());
         }
+
+        refreshFilterCounts(prefs);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshFilterCounts(getSharedPreferences(PreferenceKeys.SHARED_PREFS, 0));
+    }
+
+    private void refreshFilterCounts(final SharedPreferences prefs) {
+        showFilterCount(R.id.display_filter_button, R.id.display_filter_count,
+                prefs, PreferenceKeys.PREF_EXCLUDE_DISPLAY_ADDRS);
+        showFilterCount(R.id.log_filter_button, R.id.log_filter_count,
+                prefs, PreferenceKeys.PREF_EXCLUDE_LOG_ADDRS);
+        showFilterCount(R.id.alert_filter_button, R.id.alert_filter_count,
+                prefs, PreferenceKeys.PREF_ALERT_ADDRS);
+        showFilterCount(R.id.alert_ble_mfgr_filter_button, R.id.alert_ble_mfgr_filter_count,
+                prefs, PreferenceKeys.PREF_ALERT_BLE_MFGR_IDS);
+    }
+
+    /**
+     * Show {@code (n)} immediately beside a filter button. Cap the button width so a long
+     * translation wraps instead of pushing the count off-screen.
+     */
+    private void showFilterCount(final int buttonId, final int countViewId,
+                                  final SharedPreferences prefs, final String prefKey) {
+        final TextView countView = findViewById(countViewId);
+        if (countView != null) {
+            final int count = FilterUtil.prefListCount(prefs, prefKey);
+            countView.setText(getString(R.string.filter_item_count, count));
+            countView.setTextColor(themeColor(count > 0
+                    ? R.attr.filterCountActiveTextColor
+                    : R.attr.filterCountEmptyTextColor));
+            countView.setVisibility(View.VISIBLE);
+        }
+        final Button button = findViewById(buttonId);
+        if (button != null) {
+            final int reservedForCount = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 96f, getResources().getDisplayMetrics());
+            button.setMaxWidth(Math.max(0,
+                    getResources().getDisplayMetrics().widthPixels - reservedForCount));
+        }
+    }
+
+    private int themeColor(final int attr) {
+        final TypedValue value = new TypedValue();
+        if (getTheme().resolveAttribute(attr, value, true)
+                && value.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                && value.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+            return value.data;
+        }
+        return ContextCompat.getColor(this, android.R.color.darker_gray);
+    }
+
+    private void promptExportAlertFilter(final SharedPreferences prefs) {
+        final EditText input = new EditText(this);
+        input.setHint(R.string.export_alert_filter_description_hint);
+        input.setSingleLine(true);
+        final int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20f,
+                getResources().getDisplayMetrics());
+        final FrameLayout container = new FrameLayout(this);
+        final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = pad;
+        params.rightMargin = pad;
+        input.setLayoutParams(params);
+        container.addView(input);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.export_alert_filter)
+                .setView(container)
+                .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    final String name = input.getText() != null
+                            ? input.getText().toString().trim() : "";
+                    exportAlertFilter(prefs, name);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void exportAlertFilter(final SharedPreferences prefs, final String name) {
+        final FilterSet filterSet = FilterUtil.buildAlertFilterSetFromPrefs(prefs, name);
+        if (filterSet == null) {
+            WiGLEToast.showOverActivity(this, R.string.export_alert_filter,
+                    getString(R.string.export_alert_filter_empty));
+            return;
+        }
+
+        final String json = FilterJson.toPrettyJson(filterSet);
+        final File dir = new File(getCacheDir(), "filters");
+        if (!dir.exists() && !dir.mkdirs()) {
+            Logging.error("Unable to create filter export cache dir: " + dir);
+            WiGLEToast.showOverActivity(this, R.string.error_general,
+                    getString(R.string.error_general));
+            return;
+        }
+
+        final String fileName = filterFileName(name);
+        final File outFile = new File(dir, fileName);
+        try (final OutputStreamWriter writer = new OutputStreamWriter(
+                new FileOutputStream(outFile), StandardCharsets.UTF_8)) {
+            writer.write(json);
+        } catch (final Exception ex) {
+            Logging.error("Failed to write alert filter export: ", ex);
+            WiGLEToast.showOverActivity(this, R.string.error_general,
+                    getString(R.string.error_general));
+            return;
+        }
+
+        try {
+            final Uri fileUri = FileProvider.getUriForFile(this,
+                    getPackageName() + ".filterprovider", outFile);
+            final Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("application/json");
+            intent.putExtra(Intent.EXTRA_SUBJECT, fileName);
+            intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(Intent.createChooser(intent, getResources().getText(R.string.send_to)));
+        } catch (final Exception ex) {
+            Logging.error("Failed to share alert filter export: ", ex);
+            WiGLEToast.showOverActivity(this, R.string.error_general,
+                    getString(R.string.error_general));
+        }
+    }
+
+    private static String filterFileName(final String name) {
+        if (name == null || name.isEmpty()) {
+            return "wigle-alert-filter.json";
+        }
+        final String sanitized = name.replaceAll("[^A-Za-z0-9._-]+", "_")
+                .replaceAll("^_+|_+$", "");
+        if (sanitized.isEmpty()) {
+            return "wigle-alert-filter.json";
+        }
+        return sanitized + ".json";
     }
 }

@@ -12,10 +12,14 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -55,6 +59,7 @@ import net.wigle.wigleandroid.ui.SetNetworkListAdapter;
 import net.wigle.wigleandroid.ui.NetworkListSorter;
 import net.wigle.wigleandroid.ui.UINumberFormat;
 import net.wigle.wigleandroid.ui.WiGLEConfirmationDialog;
+import net.wigle.wigleandroid.util.FilterUtil;
 import net.wigle.wigleandroid.util.Logging;
 import net.wigle.wigleandroid.util.PreferenceKeys;
 import net.wigle.wigleandroid.util.StatsUtil;
@@ -244,30 +249,36 @@ public final class ListFragment extends Fragment implements ApiListener, DialogL
         //ALIBI: the number of async requests to perform.
         final Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-            final long count = state.dbHelper.getNewWifiCount();
-            handler.post(() -> {
-                TextView text = view.findViewById( R.id.stats_wifi );
-                text.setText( UINumberFormat.counterFormat(count) );
-            });
+            if (null != state.dbHelper) {
+                final long count = state.dbHelper.getNewWifiCount();
+                handler.post(() -> {
+                    TextView text = view.findViewById(R.id.stats_wifi);
+                    text.setText(UINumberFormat.counterFormat(count));
+                });
+            }
         });
         TextView tv = view.findViewById( R.id.stats_cell );
         tv.setText( UINumberFormat.counterFormat(lameStatic.newCells));
         executor.execute(() -> {
-            final long count = state.dbHelper.getNewBtCount();
-            handler.post(() -> {
-                TextView text = view.findViewById( R.id.stats_bt );
-                text.setText( UINumberFormat.counterFormat(count) );
-            });
+            if (null != state.dbHelper) {
+                final long count = state.dbHelper.getNewBtCount();
+                handler.post(() -> {
+                    TextView text = view.findViewById(R.id.stats_bt);
+                    text.setText(UINumberFormat.counterFormat(count));
+                });
+            }
         });
         final long unUploaded = StatsUtil.newNetsSinceUpload(prefs);
         tv = view.findViewById( R.id.stats_unuploaded );
         tv.setText( UINumberFormat.counterFormat(unUploaded));
         executor.execute(() -> {
-            final long count = state.dbHelper.getNetworkCount();
-            handler.post(() -> {
-                TextView text = view.findViewById( R.id.stats_dbnets );
-                text.setText(dbFormat.format(count)); //
-            });
+            if (null != state.dbHelper) {
+                final long count = state.dbHelper.getNetworkCount();
+                handler.post(() -> {
+                    TextView text = view.findViewById(R.id.stats_dbnets);
+                    text.setText(dbFormat.format(count)); //
+                });
+            }
         });
     }
     public void setDBStatusUI(final View view, final String status, final long queueDepth ) {
@@ -429,6 +440,9 @@ public final class ListFragment extends Fragment implements ApiListener, DialogL
         setNetCountUI(MainActivity.getStaticState(), getView());
         setScanStatusUI(null);
         animating = false;
+        if (a != null) {
+            a.invalidateOptionsMenu();
+        }
     }
 
     @Override
@@ -471,8 +485,9 @@ public final class ListFragment extends Fragment implements ApiListener, DialogL
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         item = menu.add(0, MENU_FILTER, 0, getString(R.string.menu_ssid_filter));
-        item.setIcon(R.drawable.filter);
+        item.setIcon(R.drawable.filter_list);
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        applyFilterBars(item);
 
         item = menu.add(0, MENU_SORT, 0, getString(R.string.menu_sort));
         item.setIcon(R.drawable.sort);
@@ -497,6 +512,34 @@ public final class ListFragment extends Fragment implements ApiListener, DialogL
                     : android.R.drawable.ic_media_pause);
         }
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        applyFilterBars(menu.findItem(MENU_FILTER));
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    private void applyFilterBars(final MenuItem item) {
+        if (item == null || prefs == null) {
+            return;
+        }
+        Drawable icon = DrawableCompat.unwrap(item.getIcon());
+        if (!(icon instanceof LayerDrawable)) {
+            final Activity activity = getActivity();
+            if (activity == null) {
+                return;
+            }
+            icon = AppCompatResources.getDrawable(activity, R.drawable.filter_list);
+        }
+        if (icon == null) {
+            return;
+        }
+        icon = icon.mutate();
+        if (icon instanceof LayerDrawable) {
+            FilterUtil.setFilterBarVisibility((LayerDrawable) icon, prefs);
+            item.setIcon(icon);
+        }
     }
 
     /* Handles item selections */

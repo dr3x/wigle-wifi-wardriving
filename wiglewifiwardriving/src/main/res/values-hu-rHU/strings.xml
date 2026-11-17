@@ -435,6 +435,8 @@
     <string name="manage_gpx">Mentett GPX-útvonalak kezelése</string>
     <string name="enable_map_theme">Párosítsa a térképtémát az alkalmazáshoz</string>
     <string name="throttle">A WiFi szkennelés korlátozott. A jobb teljesítmény érdekében kapcsolja ki a WiFi Scan Throttle funkciót a Fejlesztői beállítások alatt.</string>
+    <string name="samsung_wifi_calling">A Wi-Fi-hívás összeomlaszthatja a keresést ezen a Samsung-eszközön. Kapcsolja ki a Wi-Fi-hívást keresés közben: Beállítások -> Kapcsolatok -> Wi-Fi-hívás.</string>
+    <string name="quick_doze_warning">Ez a telefon a képernyő kikapcsolása után néhány percen belül mély alvásba kerül, ami leállítja a WiFi-keresést. Pixel telefonokon kapcsolja ki a Beállítások -> Akkumulátor -> Adaptív beállítások -> Adaptív akkumulátor lehetőséget, majd indítsa újra a telefont.</string>
     <string name="no_individual_nets_map">A térképháló megjelenítésének letiltása</string>
     <string name="filter_show_btle">Bluetooth LE megjelenítése</string>
     <string name="settings_gps_head">GPS beállítások</string>
@@ -500,4 +502,7 @@
     <string name="file_size_warning">Több feltöltésre lesz szükség.</string>
     <string name="invalid_foss_config">Úgy tűnik, hogy a FOSS térkép konfigurációja érvénytelen. Kérjük, ellenőrizze a beállításait.</string>
     <string name="menu_drawer_title">Menü</string>
+    <string name="display_inline_histograms">RSSI hisztogramok megjelenítése a lista háttérében</string>
+    <string name="anniversary_mode_enabled">25. évforduló mód bekapcsolva</string>
+    <string name="anniversary_mode_disabled">25. évforduló mód kikapcsolva</string>
 </resources>

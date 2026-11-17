@@ -10,6 +10,7 @@ public class PreferenceKeys {
     public static final String PREF_TOKEN_IV = "tokenIV";
     public static final String PREF_TOKEN_TAG_LENGTH = "tokenTagLength";
     public static final String PREF_SHOW_CURRENT = "showCurrent";
+    public static final String PREF_DISPLAY_INLINE_LIST_SIGNAL_HISTOGRAMS = "displayInlineListSignalHistograms";
     public static final String PREF_BE_ANONYMOUS = "beAnonymous";
     public static final String PREF_DONATE = "donate";
     public static final String PREF_DB_MARKER = "dbMarker";
@@ -60,8 +61,8 @@ public class PreferenceKeys {
     public static final String PREF_LOG_ROUTES = "logRoutes";
     public static final String PREF_DAYNIGHT_MODE = "dayNightMode";
     public static final String PREF_ALERT_ADDRS = "alertOnAddresses";
-
     public static final String PREF_ALERT_BLE_MFGR_IDS = "alertOnBleMfgrId";
+    public static final String PREF_CUSTOM_MENU_ICON = "customMenuIcon";
 
     // custom upload server (overrides WiGLE endpoints when set)
     public static final String PREF_CUSTOM_UPLOAD_URL = "customUploadUrl";
@@ -111,6 +112,8 @@ public class PreferenceKeys {
     public static final String PREF_MAPF_ENABLED = "mapfEnabled";
     public static final String FILTER_PREF_PREFIX = "LA";
     public static final String PREF_GUESS_BLE_ADDRESS_TYPE = "guessBleAddressType";
+    /** Wall time quick doze was last seen while scanning (see QuickDozeDetector). Absent when not. */
+    public static final String PREF_QUICK_DOZE_SEEN = "quickDozeSeen";
     //[remove this key and all checks based on it (default to true) for FOSS build]
     public static final String PREF_USE_FOSS_MAPS = "useFossMaps";
     public static final String PREF_FOSS_MAPS_VECTOR_TILE_STYLE = "fossMapsBaseStyleUrl";

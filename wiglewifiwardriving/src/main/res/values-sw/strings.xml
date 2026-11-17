@@ -434,6 +434,8 @@
     <string name="manage_gpx">Dhibiti njia za GPX zilizohifadhiwa</string>
     <string name="enable_map_theme">Linganisha mandhari ya ramani na programu</string>
     <string name="throttle">Uchanganuzi wa WiFi ni mdogo. Zima Wifi Scan Throttle chini ya Mipangilio ya Wasanidi Programu kwa utendakazi bora.</string>
+    <string name="samsung_wifi_calling">Wi-Fi Calling inaweza kuharibu utambazaji kwenye kifaa hiki cha Samsung. Zima Wi-Fi Calling unapotambaza: Mipangilio -> Miunganisho -> Wi-Fi Calling.</string>
+    <string name="quick_doze_warning">Simu hii huingia usingizi mzito dakika chache baada ya skrini kuzimwa, jambo linalosimamisha utafutaji wa WiFi. Kwenye simu za Pixel, zima Mipangilio -> Betri -> Mapendeleo yanayojirekebisha -> Betri inayojirekebisha, kisha uwashe upya simu.</string>
     <string name="no_individual_nets_map">Lemaza onyesho la wavu la ramani</string>
     <string name="filter_show_btle">Onyesha Bluetooth LE</string>
     <string name="settings_gps_head">Mipangilio ya GPS</string>
@@ -499,4 +501,7 @@
     <string name="file_size_warning">Itahitajika kupakia mara kwa mara.</string>
     <string name="invalid_foss_config">Inaonekana usanidi wa ramani ya FOSS si halali. Tafadhali angalia mipangilio yako.</string>
     <string name="menu_drawer_title">Menyu</string>
+    <string name="display_inline_histograms">Onyesha histogramu za RSSI kwenye mandharinyuma ya orodha</string>
+    <string name="anniversary_mode_enabled">Hali ya maadhimisho ya miaka 25 imewezeshwa</string>
+    <string name="anniversary_mode_disabled">Hali ya maadhimisho ya miaka 25 imezimwa</string>
 </resources>

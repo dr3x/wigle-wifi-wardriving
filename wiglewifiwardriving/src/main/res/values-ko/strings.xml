@@ -435,6 +435,8 @@
     <string name="manage_gpx">저장된 GPX 경로 관리</string>
     <string name="enable_map_theme">앱에 지도 테마 일치</string>
     <string name="throttle">WiFi 검색이 제한됩니다. 더 나은 성능을 위해 개발자 설정에서 WiFi 스캔 스로틀을 비활성화하십시오.</string>
+    <string name="samsung_wifi_calling">이 Samsung 기기에서 Wi-Fi 통화가 스캔을 중단시킬 수 있습니다. 스캔하는 동안 Wi-Fi 통화를 끄십시오: 설정 -> 연결 -> Wi-Fi 통화.</string>
+    <string name="quick_doze_warning">이 휴대전화는 화면이 꺼지고 몇 분 안에 깊은 절전 모드로 들어가 WiFi 검색이 중지됩니다. Pixel 휴대전화에서는 설정 -> 배터리 -> 자동 조정 환경설정 -> 자동 조정 배터리를 끈 다음 휴대전화를 다시 시작하세요.</string>
     <string name="no_individual_nets_map">지도 네트 표시 비활성화</string>
     <string name="filter_show_btle">블루투스 LE 표시</string>
     <string name="settings_gps_head">GPS 설정</string>
@@ -500,4 +502,7 @@
     <string name="file_size_warning">여러 차례 업로드가 필요합니다.</string>
     <string name="invalid_foss_config">FOSS 지도 구성이 잘못된 것 같습니다. 설정을 확인하십시오.</string>
     <string name="menu_drawer_title">메뉴</string>
+    <string name="display_inline_histograms">목록 배경에 RSSI 히스토그램 표시</string>
+    <string name="anniversary_mode_enabled">25주년 기념 모드 사용</string>
+    <string name="anniversary_mode_disabled">25주년 기념 모드 사용 안 함</string>
 </resources>

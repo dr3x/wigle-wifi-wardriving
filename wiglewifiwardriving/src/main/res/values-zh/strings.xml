@@ -435,6 +435,8 @@
     <string name="manage_gpx">管理保存的 GPX 路线</string>
     <string name="enable_map_theme">将地图主题与应用程序匹配</string>
     <string name="throttle">WiFi 扫描是有限的。在开发者设置下禁用 WiFi 扫描油门以获得更好的性能。</string>
+    <string name="samsung_wifi_calling">Wi-Fi 通话可能导致此 Samsung 设备上的扫描崩溃。扫描时请关闭 Wi-Fi 通话：设置 -> 连接 -> Wi-Fi 通话。</string>
+    <string name="quick_doze_warning">此手机在屏幕关闭几分钟内就会进入深度休眠，导致 WiFi 扫描停止。在 Pixel 手机上，请关闭 设置 -> 电池 -> 自动调节偏好设置 -> 自动调节电池，然后重启手机。</string>
     <string name="no_individual_nets_map">禁用地图网络显示</string>
     <string name="filter_show_btle">显示低功耗蓝牙（BLE）</string>
     <string name="settings_gps_head">GPS 设置</string>
@@ -500,4 +502,7 @@
     <string name="file_size_warning">需要多次上传。</string>
     <string name="invalid_foss_config">您的 FOSS 地图配置似乎无效。请检查您的设置。</string>
     <string name="menu_drawer_title">菜单</string>
+    <string name="display_inline_histograms">在列表背景显示 RSSI 直方图</string>
+    <string name="anniversary_mode_enabled">25周年纪念模式已启用</string>
+    <string name="anniversary_mode_disabled">25周年纪念模式已禁用</string>
 </resources>

@@ -434,6 +434,8 @@
     <string name="manage_gpx">सहेजे गए GPX मार्ग प्रबंधित करें</string>
     <string name="enable_map_theme">ऐप के लिए मैप थीम का मिलान करें</string>
     <string name="throttle">वाईफाई स्कैनिंग सीमित है। बेहतर प्रदर्शन के लिए डेवलपर सेटिंग्स के तहत वाईफाई स्कैन थ्रॉटल को अक्षम करें।</string>
+    <string name="samsung_wifi_calling">Wi-Fi कॉलिंग इस Samsung डिवाइस पर स्कैनिंग को क्रैश कर सकती है। स्कैन करते समय Wi-Fi कॉलिंग बंद करें: सेटिंग्स -> कनेक्शन -> Wi-Fi कॉलिंग.</string>
+    <string name="quick_doze_warning">स्क्रीन बंद होने के कुछ ही मिनटों में यह फ़ोन गहरी नींद में चला जाता है, जिससे WiFi स्कैनिंग रुक जाती है। Pixel फ़ोन पर सेटिंग -> बैटरी -> अडैप्टिव प्राथमिकताएं -> अडैप्टिव बैटरी बंद करें, फिर फ़ोन रीस्टार्ट करें।</string>
     <string name="no_individual_nets_map">मानचित्र शुद्ध प्रदर्शन अक्षम करें</string>
     <string name="filter_show_btle">ब्लूटूथ ले दिखाएँ</string>
     <string name="settings_gps_head">जीपीएस सेटिंग्स</string>
@@ -499,4 +501,7 @@
     <string name="file_size_warning">एकाधिक अपलोड आवश्यक होंगे।</string>
     <string name="invalid_foss_config">ऐसा प्रतीत होता है कि आपका FOSS मानचित्र कॉन्फ़िगरेशन अमान्य है। कृपया अपनी सेटिंग्स की जाँच करें।</string>
     <string name="menu_drawer_title">मेन्यू</string>
+    <string name="display_inline_histograms">सूची पृष्ठभूमि में RSSI हिस्टोग्राम दिखाएँ</string>
+    <string name="anniversary_mode_enabled">25वीं वर्षगांठ मोड सक्षम</string>
+    <string name="anniversary_mode_disabled">25वीं वर्षगांठ मोड अक्षम</string>
 </resources>

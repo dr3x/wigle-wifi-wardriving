@@ -435,6 +435,8 @@
     <string name="manage_gpx">Spravujte uložené trasy GPX</string>
     <string name="enable_map_theme">Spojte motiv mapy s aplikací</string>
     <string name="throttle">Skenování WiFi je omezené. Pro lepší výkon deaktivujte WiFi Scan Throttle v Nastavení vývojáře.</string>
+    <string name="samsung_wifi_calling">Volání přes Wi-Fi může způsobit pád skenování na tomto zařízení Samsung. Vypněte volání přes Wi-Fi během skenování: Nastavení -> Připojení -> Volání přes Wi-Fi.</string>
+    <string name="quick_doze_warning">Tento telefon přechází do hlubokého spánku během několika minut po vypnutí obrazovky, což zastaví vyhledávání WiFi. Na telefonech Pixel vypněte Nastavení -> Baterie -> Adaptivní předvolby -> Adaptivní baterie a pak telefon restartujte.</string>
     <string name="no_individual_nets_map">Zakázat zobrazení mapy sítě</string>
     <string name="filter_show_btle">Zobrazit Bluetooth LE</string>
     <string name="settings_gps_head">Nastavení GPS</string>
@@ -500,4 +502,7 @@
     <string name="file_size_warning">Bude nutné provést několik nahrání.</string>
     <string name="invalid_foss_config">Zdá se, že konfigurace mapy FOSS je neplatná. Zkontrolujte prosím své nastavení.</string>
     <string name="menu_drawer_title">Nabídka</string>
+    <string name="display_inline_histograms">Zobrazit histogramy RSSI na pozadí seznamu</string>
+    <string name="anniversary_mode_enabled">Režim 25. výročí povolen</string>
+    <string name="anniversary_mode_disabled">Režim 25. výročí zakázán</string>
 </resources>

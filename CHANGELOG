@@ -1,3 +1,23 @@
+* 2.112 (11/14/2026)
+DB interaction modernization & indexing
+Filter display and counts
+Reduce WiFi receive ANRs
+Allow MNC 00
+Various bug fixes
+
+* 2.111 (08/06/2026)
+Dashboard layout by width
+Filters export
+Per-row RSSI background histogram
+Memory use improvements
+Various bug fixes
+
+* 2.110 (07/22/2026)
+Greek language (thanks Yiannis Manassis!)
+More FOSS map config validation
+Fix RCOI data parsing
+Various bug fixes
+
 * 2.109 (05/13/2026)
 Overhaul database activity
 Upload partitioning

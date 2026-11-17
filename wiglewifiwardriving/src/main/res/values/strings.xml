@@ -439,6 +439,8 @@
     <string name="manage_gpx">Manage saved GPX routes</string>
     <string name="enable_map_theme">Match map theme to app</string>
     <string name="throttle">WiFi scanning is limited. Disable "WiFi Scan Throttle" under Developer Settings for better performance.</string>
+    <string name="samsung_wifi_calling">Wi-Fi Calling can crash scanning on this Samsung device. Turn Wi-Fi Calling off while scanning: Settings -> Connections -> Wi-Fi Calling.</string>
+    <string name="quick_doze_warning">This phone goes into deep sleep within minutes of the screen turning off, which stops WiFi scanning. On Pixel phones, turn off Settings -> Battery -> Adaptive preferences -> Adaptive Battery, then restart the phone.</string>
     <string name="no_individual_nets_map">Disable map net display</string>
     <string name="filter_show_btle">Show Bluetooth LE</string>
     <string name="settings_gps_head">GPS Settings</string>
@@ -482,6 +484,7 @@
     <string name="alert">Alert</string>
     <string name="add_mfgr_filter_button">Add Mfgr Id</string>
     <string name="alert_ble_mfgrs_filter_button">Alert on BLE Manufacturers</string>
+    <string name="filter_item_count">(%1$d)</string>
     <string name="guess_le_address_type">Infer BLE Address Type</string>
     <string name="use_foss_maps">Use FOSS Maps (tile URL required)</string>
     <string name="foss_map_base_url">Map vector tile server style URL base</string>
@@ -507,4 +510,10 @@
     <string name="file_size_warning">Multiple uploads will be necessary.</string>
     <string name="invalid_foss_config">It appears your FOSS map configuration is invalid. Please check your settings.</string>
     <string name="menu_drawer_title">Menu</string>
+    <string name="display_inline_histograms">Show list background RSSI histograms</string>
+    <string name="anniversary_mode_enabled">25th anniversary mode enabled</string>
+    <string name="anniversary_mode_disabled">25th anniversary mode disabled</string>
+    <string name="export_alert_filter">Export alert filter</string>
+    <string name="export_alert_filter_description_hint">Filter description</string>
+    <string name="export_alert_filter_empty">No alert addresses or BLE manufacturer IDs to export</string>
 </resources>
